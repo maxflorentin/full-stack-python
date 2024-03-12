@@ -1,16 +1,26 @@
+"""
+This module contains the configuration and setup for the HTTP server.
+"""
+
 import http.server
 import socketserver
 import os
 
-directory = "./app"
-port = 8000
-handler = http.server.SimpleHTTPRequestHandler
+DIRECTORY = "./app"
+PORT = 8000
 
 
-class MyHandler(handler):
+class MyHandler(http.server.SimpleHTTPRequestHandler):
+    """
+    Custom request handler class.
+    """
+
     def translate_path(self, path):
+        """
+        Translate the given path to the actual file path.
+        """
         path = http.server.SimpleHTTPRequestHandler.translate_path(self, path)
-        abs_directory = os.path.abspath(directory)
+        abs_directory = os.path.abspath(DIRECTORY)
         if not path.startswith(abs_directory):
             return (
                 os.path.join(abs_directory, "index.html")
@@ -20,6 +30,6 @@ class MyHandler(handler):
         return path
 
 
-with socketserver.TCPServer(("", port), MyHandler) as httpd:
-    print(f"Server running on port {port}")
+with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+    print(f"Server running on port {PORT}")
     httpd.serve_forever()
